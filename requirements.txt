@@ -1,0 +1,7 @@
+pint
+pyvisa
+stringparser
+pimpmyclass
+PySignal
+pyyaml
+serialize
