@@ -241,7 +241,9 @@ class Driver(ObservableMixin, AsyncMixin, LogMixin, CacheMixin, StorageMixin):
             else:
                 raise ValueError('keys must be a (str, list, tuple or dict)')
 
-        return {key: getattr(self, key) for key in self._lantz_feats}
+        # TODO: make this work for DictFeats
+        return {key: getattr(self, key) for key in self._lantz_feats.keys()
+                if isinstance(key, str)}
 
     def recall(self, keys=None):
         """Return the last value seen for a feat or a collection of feats.
