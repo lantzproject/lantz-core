@@ -33,7 +33,8 @@ def get_resource_manager():
     """Return the PyVISA Resource Manager, creating an instance if necessary."""
     global _resource_manager
     if _resource_manager is None:
-        _resource_manager = visa.ResourceManager()
+        from . import config
+        _resource_manager = visa.ResourceManager(config.VISA_BACKEND)
     return _resource_manager
 
 
