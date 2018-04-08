@@ -153,6 +153,7 @@ class Driver(ObservableMixin, AsyncMixin, LogMixin, CacheMixin, StorageMixin):
                     feat.config_set(None, attr_name, attr_value.default)
 
         super().__init__()
+        self._lantz_anyfeat = ChainMap(self._lantz_feats, self._lantz_dictfeats)
         self.log_info('Created ' + self.name)
 
     @property
@@ -208,10 +209,15 @@ class Driver(ObservableMixin, AsyncMixin, LogMixin, CacheMixin, StorageMixin):
 
         newstate = helpers.merge_dicts(newstate, kwargs)
         if not newstate:
-            raise ValueError("update() called with an empty dictionary")
+            raise ValueError('update() called with an empty dictionary')
+
+        notfound = set(newstate.keys()) - set(self._lantz_anyfeat.keys())
+        if notfound:
+            raise ValueError('Not valid feats: %s' % notfound)
 
         for key, value in newstate.items():
-            self._lantz_feats[key].invalidate_cache(self)
+            if force:
+                self._lantz_anyfeat[key].invalidate_cache()
             setattr(self, key, value)
 
     @Action()
@@ -242,8 +248,11 @@ class Driver(ObservableMixin, AsyncMixin, LogMixin, CacheMixin, StorageMixin):
                 raise ValueError('keys must be a (str, list, tuple or dict)')
 
         # TODO: make this work for DictFeats
-        return {key: getattr(self, key) for key in self._lantz_feats.keys()
-                if isinstance(key, str)}
+        dfeats = {key: getattr(self, key) for key in self._lantz_feats.keys()
+                  if isinstance(key, str)}
+        ddictfeats = {key: prop.getall(self) for key, prop in self._lantz_dictfeats.items()}
+
+        return {**dfeats, **ddictfeats}
 
     def recall(self, keys=None):
         """Return the last value seen for a feat or a collection of feats.
