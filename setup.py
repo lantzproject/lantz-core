@@ -41,6 +41,14 @@ setup(name='lantz_core',
                         'serialize'],
       zip_safe=False,
       platforms='any',
+      entry_points={
+          'console_scripts': [
+              'lantz-config = lantz_core.__main__:config'
+          ],
+          'lantz_subcommands': [
+              'config = lantz_core.__main__:config'
+          ],
+      },
       classifiers=[
            'Development Status :: 4 - Beta',
            'Intended Audience :: Developers',
