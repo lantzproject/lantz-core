@@ -145,4 +145,15 @@ def register_and_get(key, default):
 # Configuration Values for lantz_core
 # ====================================
 
+# Visa Backend use by Lantz
+# valid values: any value accepted by pyvisa.
+# e.g. @ni, @py, @sim, /path/to/library@ni
 VISA_BACKEND = register_and_get('core.visa_backend', '')
+
+from logging.handlers import DEFAULT_TCP_LOGGING_PORT
+
+# The host of a TCP network socket where a log is sent.
+TCP_LOGGING_HOST = register_and_get('core.tcp_logging_host', 'localhost')
+
+# The port of a TCP network socket where a log is sent.
+TCP_LOGGING_PORT = int(register_and_get('core.tcp_logging_port', DEFAULT_TCP_LOGGING_PORT))

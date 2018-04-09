@@ -18,13 +18,17 @@ import logging
 import threading
 
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
-from logging.handlers import SocketHandler, DEFAULT_TCP_LOGGING_PORT, DEFAULT_UDP_LOGGING_PORT
+from logging.handlers import SocketHandler
 
+from logging.handlers import DEFAULT_UDP_LOGGING_PORT
 from socketserver import (ThreadingUDPServer, DatagramRequestHandler,
                           ThreadingTCPServer, StreamRequestHandler)
 
 
 from stringparser import Parser
+
+from . import config
+
 
 class _LogRecord(logging.LogRecord):
 
@@ -431,8 +435,8 @@ class SocketListener(object):
         pass
 
 
-def log_to_socket(level=logging.INFO, host='localhost',
-                  port=DEFAULT_TCP_LOGGING_PORT):
+def log_to_socket(level=logging.INFO, host=config.TCP_LOGGING_HOST,
+                  port=config.TCP_LOGGING_PORT):
     """Log all Lantz events to a socket with a specific host address and port.
 
     Parameters
@@ -440,10 +444,9 @@ def log_to_socket(level=logging.INFO, host='localhost',
     level :
         logging level for the lantz handler (Default value = logging.INFO)
     host :
-        socket host (default 'localhost')
+        socket host (default config.TCP_LOGGING_HOST)
     port :
-        socket port (default DEFAULT_TCP_LOGGING_PORT as defined in the
-        logging module)
+        socket port (default config.TCP_LOGGING_PORT)
 
     Returns
     -------
@@ -486,7 +489,7 @@ def log_to_screen(level=logging.INFO, scheme='blackbg'):
     return LOGGER
 
 
-def get_address(value, default_port=DEFAULT_TCP_LOGGING_PORT):
+def get_address(value, default_port=config.TCP_LOGGING_PORT):
     """Split host:port string into (host, port) tuple
 
     Parameters
@@ -494,7 +497,7 @@ def get_address(value, default_port=DEFAULT_TCP_LOGGING_PORT):
     value :
         host:port' string
     default_port :
-        port used if not given (Default value = DEFAULT_TCP_LOGGING_PORT)
+        port used if not given (Default value = config.TCP_LOGGING_PORT)
 
     Returns
     -------
