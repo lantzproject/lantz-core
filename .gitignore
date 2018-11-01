@@ -13,3 +13,4 @@ update_*
 dist
 MANIFEST
 .tox
+.eggs
