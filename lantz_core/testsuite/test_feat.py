@@ -4,19 +4,10 @@ import time
 import logging
 import unittest
 
-from lantz_core import Driver, Feat, Q_
+from lantz_core import Driver, Feat, Q_, ureg, DimensionalityWarning
 from lantz_core.log import get_logger
 from lantz_core.helpers import UNSET, MISSING
-
-class MemHandler(logging.Handler):
-
-    def __init__(self):
-        super().__init__()
-        self.setFormatter(logging.Formatter(style='{'))
-        self.history = list()
-
-    def emit(self, record):
-        self.history.append(self.format(record))
+from lantz_core.testsuite import must_warn, MemHandler
 
 
 class FeatTest(unittest.TestCase):
@@ -270,22 +261,31 @@ class FeatTest(unittest.TestCase):
             def eggs_adim(self_, value):
                 self.assertIsInstance(value, float)
                 self.assertEqual(value, float(value))
-                self_._eggs_adim = str(value)
+                self_._eggs_adim = value
 
         obj = Spam()
         self.assertQuantityEqual(obj.eggs, Q_(8, 's'))
         self.assertEqual(setattr(obj, "eggs", Q_(3, 'ms')), None)
         self.assertQuantityEqual(obj.eggs, Q_(3 / 1000, 's'))
-        self.assertEqual(setattr(obj, "eggs", 3), None)
+
+        with must_warn(DimensionalityWarning, 1) as msg:
+            self.assertEqual(setattr(obj, "eggs", 3), None)
+        self.assertFalse(msg, msg=msg)
 
         self.assertQuantityEqual(obj.eggs_str, Q_(8, 's'))
         self.assertEqual(setattr(obj, "eggs_str", Q_(3, 'ms')), None)
         self.assertQuantityEqual(obj.eggs_str, Q_(3 / 1000, 's'))
-        self.assertEqual(setattr(obj, "eggs_str", 3), None)
+
+        with must_warn(DimensionalityWarning, 1) as msg:
+            self.assertEqual(setattr(obj, "eggs_str", 3), None)
+        self.assertFalse(msg, msg=msg)
 
         self.assertQuantityEqual(obj.eggs_adim, 8)
         self.assertEqual(setattr(obj, "eggs_adim",3), None)
-        self.assertQuantityEqual(obj.eggs_adim, 3)
+
+        with must_warn(DimensionalityWarning, 0) as msg:
+            self.assertQuantityEqual(obj.eggs_adim, 3)
+        self.assertFalse(msg, msg=msg)
 
     def test_units_tuple(self):
 
@@ -329,8 +329,11 @@ class FeatTest(unittest.TestCase):
         self.assertQuantityEqual(obj.eggs, (Q_(8, 's'),  Q_(1, 's')))
         self.assertEqual(setattr(obj, "eggs", (Q_(3, 'ms'), Q_(4, 'ms'))), None)
         self.assertQuantityEqual(obj.eggs, (Q_(3 / 1000, 's'), Q_(4 / 1000, 's')))
-        self.assertEqual(setattr(obj, "eggs", (3, 1)), None)
 
+        with must_warn(DimensionalityWarning, 2) as msg:
+            self.assertEqual(setattr(obj, "eggs", (3, 1)), None)
+        self.assertFalse(msg, msg=msg)
+        
         obj = Spam2()
         self.assertQuantityEqual(obj.eggs, (Q_(8, 's'),  1))
         self.assertEqual(setattr(obj, "eggs", (Q_(3, 'ms'), 4)), None)

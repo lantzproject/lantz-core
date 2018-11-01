@@ -33,6 +33,7 @@ from .feat import Feat, DictFeat
 from .action import Action
 from .flock import initialize_many, finalize_many
 from .messagebased import MessageBasedDriver
+from .processors import DimensionalityWarning
 
 __all__ = ['Driver', 'Action', 'Feat', 'DictFeat', 'Q_', 'MessageBasedDriver']
 

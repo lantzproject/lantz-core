@@ -4,23 +4,14 @@
 import logging
 import unittest
 
-from lantz_core import Driver, DictFeat, Q_
+from lantz_core import Driver, DictFeat, Q_, DimensionalityWarning
 
 from lantz_core.log import get_logger
 from lantz_core.helpers import UNSET
+from lantz_core.testsuite import MemHandler, must_warn
 
 from pimpmyclass import helpers
 
-
-class MemHandler(logging.Handler):
-
-    def __init__(self):
-        super().__init__()
-        self.setFormatter(logging.Formatter(style='{'))
-        self.history = list()
-
-    def emit(self, record):
-        self.history.append(self.format(record))
 
 
 class DictFeatTest(unittest.TestCase):
@@ -200,7 +191,12 @@ class DictFeatTest(unittest.TestCase):
         self.assertQuantityEqual(obj.eggs['answer'], Q_(42, 's'))
         obj.eggs['answer'] = Q_(46, 'ms')
         self.assertQuantityEqual(obj.eggs['answer'], Q_(46 / 1000, 's'))
-        obj.eggs['answer'] = 42
+
+        with must_warn(DimensionalityWarning, 1) as msg:
+            obj.eggs['answer'] = 42
+
+        self.assertFalse(msg, msg=msg)
+
 
     def test_keys(self):
 
