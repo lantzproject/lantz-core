@@ -250,7 +250,7 @@ def to_converter(func):
 
     - If spec is None, return noop
     - If spec is callable, returns the same spec
-    - If spec is list/tuple, apply the sample function to all elements.
+    - If spec is list/tuple, returns a callable that
 
     Examples
     --------
@@ -259,9 +259,11 @@ def to_converter(func):
     ...     def _inner(value):
     ...         return value * mult
     ...     return _inner
-    >>> doubler = multiplier(2)(3)
+    >>> doubler = multiplier(2)
+    >>> doubler(3)
     6
-    >>> tuple_mult = multiplier((2, 3))(3, 5)
+    >>> tuple_mult = multiplier((2, 3))
+    >>> tuple_mult((3, 5))
     (6, 15)
     """
 
@@ -278,7 +280,15 @@ def to_converter(func):
     def _inner(specs):
 
         if isinstance(specs, (list, tuple)):
-            return tuple(conv(func, spec) for spec in specs)
+
+            fs = tuple(conv(func, spec) for spec in specs)
+
+            def _most_inner(values):
+                return tuple(f(val) for f, val in zip(fs, values))
+
+            _most_inner.accepts_tuples = True
+            return _most_inner
+
         else:
             return conv(func, specs)
 
@@ -397,7 +407,7 @@ def mapper_or_checker(container):
 
     Example
     -------
-    >>> conv = to_mapper({True: 42})
+    >>> conv = mapper_or_checker({True: 42})
     >>> conv(True)
     42
     """
@@ -425,7 +435,7 @@ def reverse_mapper_or_checker(container):
 
     Example
     -------
-    >>> conv = reverse_mapper({True: 42})
+    >>> conv = reverse_mapper_or_checker({True: 42})
     >>> conv(42)
     True
     """
@@ -510,8 +520,8 @@ class Processor:
 
     def _call_tuple(self, values):
         for func in self._funcs:
-            if isinstance(func, tuple):
-                values = tuple(f(v) for f, v in zip(func, values))
+            if getattr(func, 'accepts_tuples', False):
+                values = func(values)
             else:
                 values = tuple(func(v) for v in values)
 
