@@ -90,7 +90,7 @@ def convert_to(units, on_dimensionless='warn', on_incompatible='raise',
                     elif on_incompatible == 'warn':
                         msg = 'Unable to convert {} to {}. Ignoring source units.'.format(value, units)
                         warnings.warn(msg, DimensionalityWarning)
-                        logger.warn(msg)
+                        logger.warning(msg)
 
                 # on_incompatible == 'ignore'
                 return value.magnitude
@@ -101,7 +101,7 @@ def convert_to(units, on_dimensionless='warn', on_incompatible='raise',
                     elif on_dimensionless == 'warn':
                         msg = 'Assuming units `{1.units}` for {0}'.format(value, units)
                         warnings.warn(msg, DimensionalityWarning)
-                        logger.warn(msg)
+                        logger.warning(msg)
 
                 # on_incompatible == 'ignore'
                 return float(value)
@@ -117,7 +117,7 @@ def convert_to(units, on_dimensionless='warn', on_incompatible='raise',
                     elif on_incompatible == 'warn':
                         msg = 'Assuming units `{1.units}` for {0}'.format(value, units)
                         warnings.warn(msg, DimensionalityWarning)
-                        logger.warn(msg)
+                        logger.warning(msg)
 
                 # on_incompatible == 'ignore'
                 return float(value.magnitude) * units
@@ -128,7 +128,7 @@ def convert_to(units, on_dimensionless='warn', on_incompatible='raise',
                     elif on_dimensionless == 'warn':
                         msg = 'Assuming units `{1.units}` for {0}'.format(value, units)
                         warnings.warn(msg, DimensionalityWarning)
-                        logger.warn(msg)
+                        logger.warning(msg)
 
                 # on_incompatible == 'ignore'
                 return float(value) * units
