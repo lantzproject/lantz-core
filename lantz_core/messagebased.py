@@ -428,6 +428,9 @@ class MessageBasedDriver(Driver):
         self.write(command, *send_args)
         return self.read(*recv_args)
 
+    get_query = query
+    set_query = query
+
     def parse_query(self, command, *,
                     send_args=(None, None), recv_args=(None, None),
                     format=None):
