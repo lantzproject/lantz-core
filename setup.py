@@ -39,6 +39,9 @@ setup(name='lantz_core',
                         'PySignal>=1.1.1',
                         'pyyaml',
                         'serialize'],
+      extras_require={
+          'color': ['colorama']
+      },
       zip_safe=False,
       platforms='any',
       entry_points={
