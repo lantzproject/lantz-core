@@ -148,6 +148,55 @@ class FeatTest(unittest.TestCase):
             self.assertRaises(ValueError, setattr, obj, "eggs", Q_(11. * mult, units))
             self.assertRaises(ValueError, setattr, obj, "eggs", Q_(0.9 * mult, units))
 
+    def test_limits3_units(self):
+
+        class Spam(Driver):
+
+            _eggs = 8
+
+            @Feat(limits=(1.0, 10.0, 1.0), units='second')
+            def eggs(self_):
+                return self_._eggs
+
+            @eggs.setter
+            def eggs(self_, value):
+                self_._eggs = value
+
+        obj = Spam()
+        for mult, units in ((1., 'second'), (1000., 'millisecond'), (0.001, 'kilosecond')):
+            val = Q_(2.2 * mult, units)
+            valr = Q_(2.0 * mult, units)
+            obj.eggs = val
+            self.assertEqual(obj.eggs, valr)
+            self.assertRaises(ValueError, setattr, obj, "eggs", Q_(11. * mult, units))
+            self.assertRaises(ValueError, setattr, obj, "eggs", Q_(0.9 * mult, units))
+
+    def test_example(self):
+
+        class Spam(Driver):
+
+            _freq = 1
+
+            @Feat(units='Hz', limits=(0.001, 102000, 0.00001))
+            def frequency(self):
+                """Reference frequency.
+                """
+                return self._freq
+
+            @frequency.setter
+            def frequency(self, value):
+                self._freq = value
+
+        obj = Spam()
+
+        with must_warn(DimensionalityWarning, 1) as msg:
+            obj.frequency = 8
+        self.assertFalse(msg, msg=msg)
+
+        obj.frequency = 8 * ureg.Hz
+
+
+
     def test_set_units(self):
 
         class Spam(Driver):
@@ -333,7 +382,7 @@ class FeatTest(unittest.TestCase):
         with must_warn(DimensionalityWarning, 2) as msg:
             self.assertEqual(setattr(obj, "eggs", (3, 1)), None)
         self.assertFalse(msg, msg=msg)
-        
+
         obj = Spam2()
         self.assertQuantityEqual(obj.eggs, (Q_(8, 's'),  1))
         self.assertEqual(setattr(obj, "eggs", (Q_(3, 'ms'), 4)), None)
