@@ -142,7 +142,7 @@ class DictMFeatMixin(MFeatMixin):
                 check_values(parts.get('', parts.get('key')), keys, 'in the key of get_cmd')
 
         if self.set_cmd:
-            parts = parse_cmd(self.get_cmd)
+            parts = parse_cmd(self.set_cmd)
             if set(parts.keys()) != {'key', 'value'}:
                 raise ValueError("Formatting keys in 'set_cmd' must be 'key' and 'value'")
 

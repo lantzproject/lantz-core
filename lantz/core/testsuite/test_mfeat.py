@@ -4,11 +4,11 @@ import time
 import logging
 import unittest
 
-from lantz_core import Driver, Feat, Q_, ureg, DimensionalityWarning, MessageBasedDriver
-from lantz_core.log import get_logger
-from lantz_core.helpers import UNSET, MISSING
-from lantz_core.testsuite import must_warn, MemHandler
-from lantz_core import mfeats
+from lantz.core import Driver, Feat, Q_, ureg, DimensionalityWarning, MessageBasedDriver
+from lantz.core.log import get_logger
+from lantz.core.helpers import UNSET, MISSING
+from lantz.core.testsuite import must_warn, MemHandler
+from lantz.core import mfeats
 
 
 class FakeMBDriver(Driver):

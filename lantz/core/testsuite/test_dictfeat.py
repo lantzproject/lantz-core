@@ -4,11 +4,11 @@
 import logging
 import unittest
 
-from lantz_core import Driver, DictFeat, Q_, DimensionalityWarning
+from lantz.core import Driver, DictFeat, Q_, DimensionalityWarning
 
-from lantz_core.log import get_logger
-from lantz_core.helpers import UNSET
-from lantz_core.testsuite import MemHandler, must_warn
+from lantz.core.log import get_logger
+from lantz.core.helpers import UNSET
+from lantz.core.testsuite import MemHandler, must_warn
 
 from pimpmyclass import helpers
 

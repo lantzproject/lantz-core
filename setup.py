@@ -20,7 +20,7 @@ __doc__ = long_description
 root_folder = os.path.dirname(os.path.abspath(__file__))
 
 
-setup(name='lantz_core',
+setup(name='lantz-core',
       version='0.5.dev0',
       license='BSD',
       description='Instrumentation framework',
@@ -29,8 +29,8 @@ setup(name='lantz_core',
       author='Hernan E. Grecco',
       author_email='hernan.grecco@gmail.com',
       url='https://github.com/lantzproject',
-      packages=['lantz_core'],
-      test_suite='lantz_core.testsuite.testsuite',
+      packages=['lantz.core'],
+      test_suite='lantz.core.testsuite.testsuite',
       python_requires='>=3.6',
       install_requires=['pint>=0.6',
                         'pyvisa>=1.6.2',
@@ -46,10 +46,10 @@ setup(name='lantz_core',
       platforms='any',
       entry_points={
           'console_scripts': [
-              'lantz-config = lantz_core.__main__:config'
+              'lantz-config = lantz.core.__main__:config'
           ],
           'lantz_subcommands': [
-              'config = lantz_core.__main__:config'
+              'config = lantz.core.__main__:config'
           ],
       },
       classifiers=[

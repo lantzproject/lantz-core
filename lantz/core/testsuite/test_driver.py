@@ -3,8 +3,8 @@
 import unittest
 from time import sleep
 
-from lantz_core import Driver, Feat, Action, Q_
-from lantz_core.driver import Self
+from lantz.core import Driver, Feat, Action, Q_
+from lantz.core.driver import Self
 
 SLEEP = .1
 WAIT = .2

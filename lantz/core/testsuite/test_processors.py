@@ -3,7 +3,7 @@
 import unittest
 import doctest
 
-from lantz_core import Q_
+from lantz.core import Q_
 
 import lantz_core.processors as processors
 

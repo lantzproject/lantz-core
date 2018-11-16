@@ -169,6 +169,7 @@ class Flock:
 
             d = dict(cls='%s:%s' % (driver.__class__.__module__,
                                     driver.__class__.__name__),
+                     func=previous.get('func', None),
                      args=previous.get('args', ()),
                      kwargs=previous.get('kwargs', {}),
                      logger_name=driver.logger_name,

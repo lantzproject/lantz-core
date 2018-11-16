@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from lantz_core import Driver, Action, Q_
+from lantz.core import Driver, Action, Q_
 
 
 class aDriver(Driver):
