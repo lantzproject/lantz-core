@@ -149,6 +149,11 @@ class Flock:
         f._source_dict = source
         for name, info in source['drivers']:
             driver_cls = helpers.import_from_entrypoint(info['cls'])
+
+            func_name = info.get('func', None)
+            if func_name:
+                driver_cls = getattr(driver_cls, func_name)
+
             driver = driver_cls(name=info['name'],
                                 *info.get('args', ()),
                                 **info.get('kwargs', {}))
