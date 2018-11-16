@@ -9,7 +9,6 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import abc
 from string import Formatter
 
 from .feat import Feat, DictFeat
@@ -262,6 +261,18 @@ class QuantityDictFeat(DictMFeatMixin, DictFeat):
         QuantityMixin.__init__(self, units, limits)
         self.units = units
         self.limits = limits
+
+
+class IntFeat(QuantityFeat):
+
+    def __init__(self, get_cmd, set_cmd, limits=None):
+        super().__init__(get_cmd, set_cmd, units=None, limits=limits)
+
+
+class IntDictFeat(QuantityDictFeat):
+
+    def __init__(self, get_cmd, set_cmd, limits=None, keys=None):
+        super().__init__(get_cmd, set_cmd, units=None, limits=limits, keys=keys)
 
 
 class ValuesMixin:

@@ -125,6 +125,21 @@ class Feat(LockProperty, ObservableProperty, PreventUnnecessarySetProperty, Read
         self.rebuild(instance)
 
     def rebuild(self, instance=None):
+
+        # Get order
+        # instrument value
+        #  -> user funcs (get_funcs)
+        #  -> reverse_mapper_or_checker (values)
+        #  -> to quantity (units)
+        #  -> user value
+
+        # Set order
+        # user value
+        #  -> to magnitude (unit converter)
+        #  -> check limit (limits)
+        #  -> user func (set_funcs)
+        #  -> instrument value
+
         values = self.values_iget(instance)
         units = self.units_iget(instance)
         limits = self.limits_iget(instance)
