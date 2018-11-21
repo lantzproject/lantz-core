@@ -245,34 +245,30 @@ class QuantityFeat(QuantityMixin, MFeatMixin, Feat):
     def __init__(self, get_cmd, set_cmd, units=None, limits=None):
         MFeatMixin.__init__(self, get_cmd, set_cmd)
         QuantityMixin.__init__(self, units, limits)
-        self.__units = units
-        self.__limits = limits
 
     def _check_format_string(self):
         self._check_values(self.set_cmd)
 
 
-class QuantityDictFeat(DictMFeatMixin, DictFeat):
+class QuantityDictFeat(QuantityMixin, DictMFeatMixin, DictFeat):
     """A Quantity DictFeat for message based drivers.
     """
 
     def __init__(self, get_cmd, set_cmd, units=None, limits=None, keys=None):
         DictMFeatMixin.__init__(self, get_cmd, set_cmd, keys)
         QuantityMixin.__init__(self, units, limits)
-        self.units = units
-        self.limits = limits
 
 
 class IntFeat(QuantityFeat):
 
     def __init__(self, get_cmd, set_cmd, limits=None):
-        super().__init__(get_cmd, set_cmd, units=None, limits=limits)
+        QuantityFeat.__init__(self, get_cmd, set_cmd, units=None, limits=limits)
 
 
 class IntDictFeat(QuantityDictFeat):
 
     def __init__(self, get_cmd, set_cmd, limits=None, keys=None):
-        super().__init__(get_cmd, set_cmd, units=None, limits=limits, keys=keys)
+        QuantityDictFeat.__init__(self, get_cmd, set_cmd, units=None, limits=limits, keys=keys)
 
 
 class ValuesMixin:
