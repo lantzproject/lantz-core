@@ -5,7 +5,7 @@ import doctest
 
 from lantz.core import Q_
 
-import lantz_core.processors as processors
+import lantz.core.processors as processors
 
 mv = Q_(1, 'mV')
 Hz = Q_(1, 'Hz')
