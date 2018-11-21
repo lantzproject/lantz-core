@@ -2,7 +2,6 @@ include LICENSE AUTHORS README CHANGES
 
 include *.txt
 include .travis.yml
-recursive-include lantz *.c
-recursive-include lantz *.h
+recursive-include lantz *
 
 global-exclude *.pyc *.pyo .DS_Store
