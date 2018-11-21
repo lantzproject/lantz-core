@@ -120,7 +120,7 @@ def convert_to(units, on_dimensionless='warn', on_incompatible='raise',
                         logger.warning(msg)
 
                 # on_incompatible == 'ignore'
-                return float(value.magnitude) * units
+                return Q_(float(value.magnitude), units)
             else:
                 if not units.dimensionless:
                     if on_dimensionless == 'raise':
@@ -131,7 +131,7 @@ def convert_to(units, on_dimensionless='warn', on_incompatible='raise',
                         logger.warning(msg)
 
                 # on_incompatible == 'ignore'
-                return float(value) * units
+                return Q_(float(value), units)
         return _inner
 
 
