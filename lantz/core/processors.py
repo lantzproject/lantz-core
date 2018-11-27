@@ -9,8 +9,9 @@
     :license: BSD, see LICENSE for more details.
 """
 
-import warnings
+import enum
 import functools
+import warnings
 
 from . import Q_
 from .log import LOGGER as _LOG
@@ -245,6 +246,52 @@ def mapper(container):
     return _inner
 
 
+def enum_mapper(container):
+    """Callable that returns the value for a given key
+    in a Enum class.
+
+    The callable raises a ValueError if value not in the container.
+
+    Parameters
+    ----------
+    container : Enum class
+
+    Returns
+    -------
+    callable (value) -> (value) might raise ValueError
+
+    Examples
+    -------
+    >>> getter = mapper(MyEnum)
+    >>> getter(MyEnum.A)
+    42
+    >>> getter('A')
+    42
+    >>> getter('B')
+    Traceback (most recent call last):
+    ...
+    ValueError: 'B' not in MyEnum
+    """
+
+    def _inner(key):
+
+        if isinstance(key, enum.Enum):
+            return key.value
+
+        elif isinstance(key, str):
+            try:
+                key = container[key]
+            except KeyError:
+                raise ValueError("{!r} not in {!r}".format(key, container))
+
+            return key.value
+
+        else:
+            raise ValueError("{!r} not in {!r}".format(key, container))
+
+    return _inner
+
+
 def to_converter(func):
     """Wraps a function taking a single value to
 
@@ -414,6 +461,8 @@ def mapper_or_checker(container):
 
     if isinstance(container, dict):
         return mapper(container)
+    if isinstance(container, enum.EnumMeta):
+        return enum_mapper(container)
     if isinstance(container, set):
         return membership_checker(container)
     raise TypeError('to_mapper argument must be a dict, '
