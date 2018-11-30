@@ -20,8 +20,9 @@ def to_brackets(field_name, format_spec):
 
     if format_spec:
         format_spec = ':' + format_spec
+        return '{' + field_name + format_spec + '}'
 
-    return '{' + field_name + format_spec + '}'
+    return '{' + field_name + '}'
 
 
 def to_spec_brackets(format_spec):
@@ -29,9 +30,9 @@ def to_spec_brackets(format_spec):
     """
 
     if format_spec:
-        format_spec = ':' + format_spec
+        return '{' + ':' + format_spec + '}'
 
-    return '{' + format_spec + '}'
+    return '{}'
 
 
 def parse_cmd(format_string):
@@ -39,7 +40,8 @@ def parse_cmd(format_string):
     (Removes field names)
     """
     return {field_name: to_spec_brackets(format_spec)
-            for (literal_text, field_name, format_spec, conversion) in Formatter().parse(format_string)}
+            for (literal_text, field_name, format_spec, conversion) in Formatter().parse(format_string)
+            if field_name is not None}
 
 
 def check_values(format_string, values, msg):
