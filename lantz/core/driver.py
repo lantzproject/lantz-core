@@ -89,8 +89,14 @@ class MyDict(dict):
     pass
 
 
-class Driver(ObservableMixin, AsyncMixin, LogMixin, CacheMixin, StorageMixin):
-    """Base class for all drivers.
+class Base(ObservableMixin, AsyncMixin, LogMixin, CacheMixin, StorageMixin):
+    """Base class for all lantz objects.
+
+    Provides:
+    - Observables
+    - Async capabilities for actions
+    - Logging
+    - Feat cache
 
     Parameters
     ----------
@@ -176,6 +182,35 @@ class Driver(ObservableMixin, AsyncMixin, LogMixin, CacheMixin, StorageMixin):
         classname = self.__class__.__name__
         return "<{}('{}')>".format(classname, self.name)
 
+    @property
+    def feats(self):
+        """ """
+        return Proxy(self, self._lantz_feats, FeatProxy)
+
+    @property
+    def dictfeats(self):
+        """ """
+        return Proxy(self, self._lantz_dictfeats, DictFeatProxy)
+
+    @property
+    def actions(self):
+        """ """
+        return Proxy(self, self._lantz_actions, ActionProxy)
+
+
+class Driver(Base):
+    """Base class for all drivers.
+
+    Parameters
+    ----------
+    s :
+        name: easy to remember identifier given to the instance for logging
+        purposes
+
+    Returns
+    -------
+    """
+
     def __enter__(self):
         self.initialize()
         return self
@@ -192,6 +227,7 @@ class Driver(ObservableMixin, AsyncMixin, LogMixin, CacheMixin, StorageMixin):
     def finalize(self):
         """ """
         pass
+
 
     @Action()
     def update(self, newstate=None, *, force=False, **kwargs):
@@ -271,20 +307,6 @@ class Driver(ObservableMixin, AsyncMixin, LogMixin, CacheMixin, StorageMixin):
 
         return super().recall(keys or self._lantz_feats.keys())
 
-    @property
-    def feats(self):
-        """ """
-        return Proxy(self, self._lantz_feats, FeatProxy)
-
-    @property
-    def dictfeats(self):
-        """ """
-        return Proxy(self, self._lantz_dictfeats, DictFeatProxy)
-
-    @property
-    def actions(self):
-        """ """
-        return Proxy(self, self._lantz_actions, ActionProxy)
 
 
 def _raise_must_change(dependent, feat_name, operation):
