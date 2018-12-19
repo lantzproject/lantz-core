@@ -376,7 +376,8 @@ class MessageBasedDriver(Driver):
 
         self.__resource_manager = get_resource_manager()
         try:
-            resource_info = self.__resource_manager.resource_info(resource_name)
+            if not resource_name == 'dummy':
+                resource_info = self.__resource_manager.resource_info(resource_name)
         except visa.VisaIOError:
             raise ValueError('The resource name is invalid')
 
@@ -391,9 +392,12 @@ class MessageBasedDriver(Driver):
 
         #: keyword arguments passed to the resource during initialization.
         #: :type: dict
-        self.resource_kwargs = self._get_defaults_kwargs(resource_info.interface_type.name.upper(),
-                                                         resource_info.resource_class,
-                                                         **kwargs)
+        if resource_name == 'dummy':
+            self.resource_kwargs = dict()
+        else:
+            self.resource_kwargs = self._get_defaults_kwargs(resource_info.interface_type.name.upper(),
+                                                             resource_info.resource_class,
+                                                             **kwargs)
 
         # The resource will be created when the driver is initialized.
         #: :type: pyvisa.resources.MessageBasedResource
@@ -405,11 +409,13 @@ class MessageBasedDriver(Driver):
         super().initialize()
         self.log_debug('Opening resource {}', self.resource_name)
         self.log_debug('Setting {}', list(self.resource_kwargs.items()))
-        self.resource = get_resource_manager().open_resource(self.resource_name, **self.resource_kwargs)
+        if not self.resource_name == 'dummy':
+            self.resource = get_resource_manager().open_resource(self.resource_name, **self.resource_kwargs)
 
     def finalize(self):
         self.log_debug('Closing resource {}', self.resource_name)
-        self.resource.close()
+        if not self.resource_name == 'dummy':
+            self.resource.close()
         super().finalize()
 
     def query(self, command, *, send_args=(None, None), recv_args=(None, None)):
