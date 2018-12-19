@@ -20,11 +20,21 @@ from .processors import (Processor,
                          range_checker, MyRange)
 
 from pimpmyclass.helpers import Config
-from pimpmyclass.methods import LockMethod, TransformMethod, StatsMethod, LogMethod
+from pimpmyclass.methods import LockMethod, TransformMethod, StatsMethod, LogMethod, NamedMethod
 
 
+class SimMethod(NamedMethod):
 
-class Action(LockMethod, TransformMethod, LogMethod, StatsMethod):
+    _simulator = None
+
+    def call(self, instance, *args, **kwargs):
+        if self._simulator:
+            return self._simulator(instance, *args, **kwargs)
+
+        return super().call(instance, *args, **kwargs)
+
+
+class Action(LockMethod, TransformMethod, LogMethod, StatsMethod, SimMethod):
     """Wraps a Driver method with Lantz. Can be used as a decorator.
 
     Processors can registered for each arguments to modify their values before
