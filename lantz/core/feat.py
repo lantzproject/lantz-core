@@ -338,3 +338,17 @@ class DictFeatProxy:
 
     def __getitem__(self, item):
         return FeatProxy(self.instance, self.proxied.subproperty(self.instance, item))
+
+
+class TypedFeat(Feat):
+
+    def __init__(self, valid_types, *args, **kwargs):
+        self.valid_types = valid_types
+        super().__init__(fget=self.local_get, fset=self.local_set, *args, **kwargs)
+
+    def local_get(self, instance):
+        return self.recall(instance)
+
+    def local_set(self, instance, value):
+        if not isinstance(value, self.valid_types):
+            raise Exception('Only {} are valid types for {}, not {}'.format(self.valid_types, self.name, value))
