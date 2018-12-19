@@ -16,15 +16,38 @@ from collections import defaultdict
 
 from pimpmyclass.helpers import Config
 from pimpmyclass.props import (LockProperty, GetSetCacheProperty, ReadOnceProperty, PreventUnnecessarySetProperty, TransformProperty,
-                               StatsProperty, LogProperty, ObservableProperty, StorageProperty, InstanceConfigurableProperty)
+                               StatsProperty, LogProperty, ObservableProperty, NamedProperty, InstanceConfigurableProperty)
 from pimpmyclass.dictprops import DictObservableProperty
 
 from .processors import (Processor, to_quantity_converter, to_magnitude_converter,
                          mapper_or_checker, reverse_mapper_or_checker, range_checker, MyRange)
 
 
+class SimProperty(NamedProperty):
+    """A property that with a set or get Lock.
+
+    Requires that the owner class inherits LogMixin.
+    """
+
+    _simulator = None
+
+    def get(self, instance, objtype):
+
+        # checking for fget allows dispatching checking for existence
+        if self._simulator and self.fget:
+            return self._simulator.get(instance)
+
+        return super().get(instance, objtype)
+
+    def set(self, instance, value):
+        if self._simulator and self.fset:
+            return self._simulator.set(instance, value)
+
+        return super().set(instance, value)
+
+
 class Feat(LockProperty, ObservableProperty, PreventUnnecessarySetProperty, ReadOnceProperty,
-           GetSetCacheProperty, TransformProperty, LogProperty, StatsProperty):
+           GetSetCacheProperty, TransformProperty, LogProperty, StatsProperty, SimProperty):
     """Pimped Python property for interfacing with instruments. Can be used as
     a decorator.
 
@@ -197,6 +220,8 @@ class DictFeat(InstanceConfigurableProperty, DictObservableProperty):
     get_funcs = Config()
     set_funcs = Config()
 
+    _simulator = None
+
     def __set_name__(self, owner, name):
         super().__set_name__(owner, name)
 
@@ -217,6 +242,8 @@ class DictFeat(InstanceConfigurableProperty, DictObservableProperty):
             fset=fset,
             **dict(self.config_iter(instance))
         )
+        if self._simulator is not None:
+            p._simulator = self._simulator(key)
         return p
 
     def on_config_set(self, instance, key, value):
