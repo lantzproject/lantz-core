@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
+import collections
 from string import Formatter
 
 from .feat import Feat, DictFeat
@@ -99,6 +100,9 @@ class MFeatMixin:
         return dict(fget=self.local_get if self.get_cmd else None,
                     fset=self.local_set if self.set_cmd else None,)
 
+    def get_initial_value(self):
+        return self._internal_type()
+
 
 class DictMFeatMixin(MFeatMixin):
     """"Mixin class for feats in message based drivers.
@@ -158,6 +162,11 @@ class DictMFeatMixin(MFeatMixin):
         """
         return {'keys': self.keys, **super()._build_feat_kwargs(owner, name)}
 
+    def get_initial_value(self):
+        if self.keys:
+            return {k: self._internal_type() for k in self.keys}
+        return collections.defaultdict(self._internal_type)
+
 
 class BoolMixin:
     """Mixin class for boolean feats
@@ -166,6 +175,7 @@ class BoolMixin:
     def __init__(self, true_value, false_value):
         self.__true_value = true_value
         self.__false_value = false_value
+        self._internal_type = bool
 
     def _build_feat_kwargs(self, owner, name):
 
@@ -231,6 +241,7 @@ class QuantityMixin:
     def __init__(self, units=None, limits=None):
         self.__units = units
         self.__limits = limits
+        self._internal_type = float
 
     def _build_feat_kwargs(self, owner, name):
         return dict(units=self.__units, limits= self.__limits,
@@ -265,12 +276,14 @@ class IntFeat(QuantityFeat):
 
     def __init__(self, get_cmd, set_cmd, limits=None):
         QuantityFeat.__init__(self, get_cmd, set_cmd, units=None, limits=limits)
+        self._internal_type = int
 
 
 class IntDictFeat(QuantityDictFeat):
 
     def __init__(self, get_cmd, set_cmd, limits=None, keys=None):
         QuantityDictFeat.__init__(self, get_cmd, set_cmd, units=None, limits=limits, keys=keys)
+        self._internal_type = int
 
 
 class ValuesMixin:
@@ -290,6 +303,12 @@ class ValuesMixin:
     def _build_feat_kwargs(self, owner, name):
         return dict(values=self.__values,
                     **super()._build_feat_kwargs(owner, name))
+
+    def get_initial_value(self):
+        values = self.__values
+        if isinstance(self.__values, dict):
+            values = list(values.values())
+        return values[0]
 
 
 class ValuesFeat(ValuesMixin, MFeatMixin, Feat):
