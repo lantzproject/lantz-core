@@ -11,13 +11,11 @@
 
 import atexit
 
-import yaml
+import serialize
 
 from collections import defaultdict
 from concurrent import futures
 from types import MappingProxyType
-
-import serialize
 
 from . import helpers
 
@@ -88,7 +86,7 @@ class Flock:
     def __getattr__(self, item):
         return self._drivers[item]
 
-    def initialize(self, register_finalizer=True, on_initializing=None,
+    def initialize(self, register_finalizer=False, on_initializing=None,
                    on_initialized=None, on_exception=None, concurrent=False):
         """Initialize the flock.
 
@@ -141,30 +139,37 @@ class Flock:
                              dict(self._dependencies))
 
     @classmethod
-    def from_yaml(cls, filename):
-        with open(filename, mode='w', encoding='utf-8') as fi:
-            source = serialize.load(fi)
+    def parse(cls, flock, source):
 
-        f = Flock()
-        f._source_dict = source
-        for name, info in source['drivers']:
+        for name, info in source.get('drivers', {}).items():
             driver_cls = helpers.import_from_entrypoint(info['cls'])
 
             func_name = info.get('func', None)
             if func_name:
                 driver_cls = getattr(driver_cls, func_name)
 
-            driver = driver_cls(name=info['name'],
+            driver = driver_cls(name=name,
                                 *info.get('args', ()),
                                 **info.get('kwargs', {}))
 
             driver.logger_name = info.get('logger_name', None)
-            f.add(driver, *info.get('dependencies', ()))
-            f._checkpoint[info['name']] = info.get('state', {})
+            flock.add(driver, *info.get('dependencies', ()))
+            flock._state[name] = info.get('state', {})
 
-        return f
+        return flock
+
+    @classmethod
+    def from_yaml(cls, filename):
+        source = serialize.load(filename)
+
+        f = Flock()
+        f._source_dict = source
+        return cls.parse(f, source)
 
     def to_yaml(self, filename):
+        if not filename.endswith('.yaml'):
+            filename += filename + '.yaml'
+
         self.record_state()
 
         drivers = {}
@@ -185,13 +190,12 @@ class Flock:
         d = dict(drivers=drivers,
                  )
 
-        with open(filename, mode='w', encoding='utf-8') as fo:
-            serialize.dump(fo, d)
+        serialize.dump(d, filename)
 
     def record_state(self):
         """Record the recall state of each driver in the flock.
         """
-        self._checkpoint = self.recall()
+        self._state = self.recall()
 
     def recall(self):
         """Return the last value seen for each feat for each driver in the flock.
@@ -210,7 +214,7 @@ class Flock:
             (default = None, corresponding to use the last recorded state)
 
         """
-        if state is None and self._checkpoint is None:
+        if state is None and self._state is None:
             raise ValueError('No recorded state')
 
         for name, driver_state in state.items():
