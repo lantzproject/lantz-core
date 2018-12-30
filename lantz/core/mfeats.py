@@ -92,7 +92,8 @@ class MFeatMixin:
     def _check_format_string(self):
         """Implement to check if a formatting string is valid.
         """
-        raise NotImplementedError
+        if self.set_cmd:
+            check_values(self.set_cmd, (self.get_initial_value(),), 'in set_cmd')
 
     def _build_feat_kwargs(self, owner, name):
         """Builds the kwargs to be delivered to the Feat constructor.
@@ -101,7 +102,7 @@ class MFeatMixin:
                     fset=self.local_set if self.set_cmd else None,)
 
     def get_initial_value(self):
-        return self._internal_type()
+        return self._get_initial_value()
 
 
 class DictMFeatMixin(MFeatMixin):
@@ -164,8 +165,8 @@ class DictMFeatMixin(MFeatMixin):
 
     def get_initial_value(self):
         if self.keys:
-            return {k: self._internal_type() for k in self.keys}
-        return collections.defaultdict(self._internal_type)
+            return {k: self._get_initial_value() for k in self.keys}
+        return collections.defaultdict(self._get_initial_value)
 
 
 class BoolMixin:
@@ -175,7 +176,6 @@ class BoolMixin:
     def __init__(self, true_value, false_value):
         self.__true_value = true_value
         self.__false_value = false_value
-        self._internal_type = bool
 
     def _build_feat_kwargs(self, owner, name):
 
@@ -206,6 +206,9 @@ class BoolMixin:
         if format_string:
             check_values(format_string, values, 'set_cmd')
 
+    def get_initial_value(self):
+        return False
+
 
 class BoolFeat(BoolMixin, MFeatMixin, Feat):
     """A boolean Feat for message based drivers.
@@ -234,11 +237,50 @@ class BoolDictFeat(BoolMixin, DictMFeatMixin, DictFeat):
         DictMFeatMixin.__init__(self, get_cmd, set_cmd, keys)
 
 
+class NumericMixin:
+
+    def __init__(self, limits):
+        self.__limits = limits
+
+    def _build_feat_kwargs(self, owner, name):
+        return dict(limits= self.__limits,
+                    **super()._build_feat_kwargs(owner, name))
+
+class IntMixin(NumericMixin):
+    """Mixin class for Int Feats
+    """
+
+    def _build_feat_kwargs(self, owner, name):
+        return dict(get_funcs=(int, ),
+                    **super()._build_feat_kwargs(owner, name))
+
+    def _get_initial_value(self):
+        return 0
+
+    def _check_values(self, format_string):
+        pass
+
+
+class FloatMixin(NumericMixin):
+    """Mixin class for Float Feats
+    """
+
+    def _build_feat_kwargs(self, owner, name):
+        return dict(get_funcs=(float, ),
+                    **super()._build_feat_kwargs(owner, name))
+
+    def _get_initial_value(self):
+        return 0.0
+
+    def _check_values(self, format_string):
+        pass
+
+
 class QuantityMixin:
     """Mixin class for Quantity Feats
     """
 
-    def __init__(self, units=None, limits=None):
+    def __init__(self, units, limits=None):
         self.__units = units
         self.__limits = limits
         self._internal_type = float
@@ -249,6 +291,9 @@ class QuantityMixin:
 
     def _check_values(self, format_string):
         pass
+
+    def _get_initial_value(self):
+        return 0
 
 
 class QuantityFeat(QuantityMixin, MFeatMixin, Feat):
@@ -272,18 +317,32 @@ class QuantityDictFeat(QuantityMixin, DictMFeatMixin, DictFeat):
         QuantityMixin.__init__(self, units, limits)
 
 
-class IntFeat(QuantityFeat):
+class IntFeat(IntMixin, MFeatMixin, Feat):
 
     def __init__(self, get_cmd, set_cmd, limits=None):
-        QuantityFeat.__init__(self, get_cmd, set_cmd, units=None, limits=limits)
-        self._internal_type = int
+        MFeatMixin.__init__(self, get_cmd, set_cmd)
+        IntMixin.__init__(self, limits)
 
 
-class IntDictFeat(QuantityDictFeat):
+class IntDictFeat(IntMixin, DictMFeatMixin, DictFeat):
 
     def __init__(self, get_cmd, set_cmd, limits=None, keys=None):
-        QuantityDictFeat.__init__(self, get_cmd, set_cmd, units=None, limits=limits, keys=keys)
-        self._internal_type = int
+        DictMFeatMixin.__init__(self, get_cmd, set_cmd, keys=keys)
+        IntMixin.__init__(self, limits)
+
+
+class FloatFeat(FloatMixin, MFeatMixin, Feat):
+
+    def __init__(self, get_cmd, set_cmd, limits=None):
+        MFeatMixin.__init__(self, get_cmd, set_cmd)
+        FloatMixin.__init__(self, limits)
+
+
+class FloatDictFeat(FloatMixin, DictMFeatMixin, DictFeat):
+
+    def __init__(self, get_cmd, set_cmd, limits=None, keys=None):
+        DictMFeatMixin.__init__(self, get_cmd, set_cmd, keys=keys)
+        FloatMixin.__init__(self, limits)
 
 
 class ValuesMixin:
