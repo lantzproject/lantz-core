@@ -5,7 +5,17 @@ Lantz Changelog
 0.5 (unreleased)
 ----------------
 
-- Extracted Core from the main Lantz repo.
+- Extracted Core from the main Lantz repo. Kept here:
+    Driver, Feats, DictFeats, Action,
+    MessageBasedDriver, ForeignDriver,
+    Log capabilities,
+    Common errors.
+- Added lantz-config command
+- Changed signals from PyQt to PySignal to remove PyQt dependency,.
+- Moved a lot of Feat related code to pimpmyclass
+- Created mfeats module: Feats for MessageBasedDrivers.
+- Added hooks to help simulating drivers.
+- Created TypedFeat for non delegated Feats.
 
 
 0.3 (2015-02-05)
