@@ -1,4 +1,4 @@
-lantz_core
+lantz-core
 ==========
 
 Lantz is an automation and instrumentation toolkit with a clean, well-designed
@@ -6,9 +6,10 @@ and consistent interface.  It provides a core of commonly used functionalities
 for building applications that communicate with scientific instruments allowing
 rapid application prototyping, development and testing.
 
+This contains the lantz.core subpackage. 
+
 For a longer description and docs, please visit the root of the project:
 
 https://github.com/lantzproject/lantz
-
 
 The Lantz Authors
