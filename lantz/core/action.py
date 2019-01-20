@@ -13,15 +13,16 @@
 from collections import defaultdict
 import inspect
 
-from .helpers import keep_if_not, MISSING
+from pimpmyclass import InstanceConfig
+from pimpmyclass.methods import LockMethod, TransformMethod, StatsMethod, LogMethod, NamedMethod
+
+from .helpers import keep_if_not, MISSING, Self
 from .processors import (Processor,
                          reverse_mapper_or_checker, mapper_or_checker,
                          to_quantity_converter, to_magnitude_converter,
                          range_checker, MyRange)
 
-from pimpmyclass.helpers import Config
-from pimpmyclass.methods import LockMethod, TransformMethod, StatsMethod, LogMethod, NamedMethod
-
+_NoneType = type(None)
 
 class SimMethod(NamedMethod):
 
@@ -102,9 +103,8 @@ class Action(LockMethod, TransformMethod, LogMethod, StatsMethod, SimMethod):
     _storage_ns = 'action'
     _storage_ns_init = lambda instance: defaultdict(dict)
 
-    # This method is not necessary, just kept here to help with introspection
 
-    modifiers = Config()
+    modifiers = InstanceConfig(default=None)
 
     def __init__(self, *, values=None, units=None, limits=None, funcs=None):
         super().__init__()

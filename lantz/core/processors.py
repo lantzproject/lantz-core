@@ -496,7 +496,7 @@ def reverse_mapper_or_checker(container):
         return mapper({value: key for key, value in container.items()})
     if isinstance(container, set):
         return membership_checker(container)
-    raise TypeError('reverse_mapper argument must be a dict, '
+    raise TypeError('reverse_mapper argument must be a dict or set, '
                     'not {}'.format(container))
 
 

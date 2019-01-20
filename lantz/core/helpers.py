@@ -170,3 +170,63 @@ def import_from_entrypoint(object_ref):
             obj = getattr(obj, attr)
 
     return obj
+
+
+class MetaSelf(type):
+    """Metaclass for Self object"""
+
+    def __getattr__(self, item):
+        return Self(item)
+
+
+class Self(metaclass=MetaSelf):
+    """Self objects are used in during Driver class declarations
+    to refer to the object that is going to be instantiated.
+
+    Example
+    -------
+    >>> Self.units('s')
+    <Self.units('s')>
+    """
+
+    def __init__(self, item, default=MISSING):
+        self.item = item
+        self.default = default
+
+    def __get__(self, instance, owner=None):
+        return getattr(instance, self.item)
+
+    def __call__(self, default_value):
+        self.default = default_value
+        return self
+
+    def __repr__(self):
+        return "<Self.{}('{}')>".format(self.item, self.default)
+
+
+class Proxy(object):
+    """Read only dictionary that maps feat name to Proxy objects"""
+
+    def __init__(self, instance, collection, callable):
+        self.instance = instance
+        self.collection = collection
+        self.callable = callable
+
+    def __contains__(self, item):
+        return item in self.collection
+
+    def __getattr__(self, item):
+        return self.callable(self.instance, self.collection[item])
+
+    def __getitem__(self, item):
+        return self.callable(self.instance, self.collection[item])
+
+    def items(self):
+        """ """
+        for key, value in self.collection.items():
+            yield key, self.callable(self.instance, value)
+
+    def keys(self):
+        """ """
+        for key in self.collection.keys():
+            yield key

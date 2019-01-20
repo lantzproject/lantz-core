@@ -300,9 +300,9 @@ class FeatTest(unittest.TestCase):
                 self.assertEqual(value, float(value))
                 self_._eggs_str = str(value)
 
-            _eggs_adim = '8'
+            _eggs_adim = 8
 
-            @Feat(units=float)
+            @Feat(units='')
             def eggs_adim(self_):
                 return self_._eggs_adim
 
@@ -330,7 +330,7 @@ class FeatTest(unittest.TestCase):
         self.assertFalse(msg, msg=msg)
 
         self.assertQuantityEqual(obj.eggs_adim, 8)
-        self.assertEqual(setattr(obj, "eggs_adim",3), None)
+        self.assertEqual(setattr(obj, "eggs_adim",3.), None)
 
         with must_warn(DimensionalityWarning, 0) as msg:
             self.assertQuantityEqual(obj.eggs_adim, 3)

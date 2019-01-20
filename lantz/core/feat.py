@@ -14,13 +14,18 @@ import functools
 
 from collections import defaultdict
 
-from pimpmyclass.helpers import Config
+from pimpmyclass import InstanceConfig
 from pimpmyclass.props import (LockProperty, GetSetCacheProperty, ReadOnceProperty, PreventUnnecessarySetProperty, TransformProperty,
                                StatsProperty, LogProperty, ObservableProperty, NamedProperty, InstanceConfigurableProperty)
 from pimpmyclass.dictprops import DictObservableProperty
 
+
+from .helpers import Self, MetaSelf, Proxy
 from .processors import (Processor, to_quantity_converter, to_magnitude_converter,
                          mapper_or_checker, reverse_mapper_or_checker, range_checker, MyRange)
+
+
+_NoneType = type(None)
 
 
 class SimProperty(NamedProperty):
@@ -68,29 +73,6 @@ class Feat(LockProperty, ObservableProperty, PreventUnnecessarySetProperty, Read
     6. LogProperty: log get and set operations
     7. StatsProperty: record number of calls and timing stats for get/set/failed operations.
     8. Finally the actual getter or setter is called.
-
-    Parameters
-    ----------
-    fget : callable
-        getter function.
-    fset : callable
-        setter function.
-    doc : str
-        docstring, if missing fget or fset docstring will be used.
-    values : tuple or set or dict
-        A dictionary to map key to values.
-        A set to restrict the values.
-    units : str or Quantity
-        That can be interpreted as units.
-    limits : tuple
-        Specify a range (start, stop, step) for numerical values
-    get_funcs : iterable of callables
-        Other callables to be applied to input arguments.
-    set_funcs : iterable of callables
-        Other callables to be applied to input arguments.
-    read_once : bool
-        Indicates that the value will be cached and used in all further get operations.
-
     """
 
     __original_doc__ = ''
@@ -99,11 +81,16 @@ class Feat(LockProperty, ObservableProperty, PreventUnnecessarySetProperty, Read
     _storage_ns_init = lambda instance: defaultdict(dict)
 
     # These are feat modifiers.
-    values = Config()
-    units = Config()
-    limits = Config()
-    get_funcs = Config()
-    set_funcs = Config()
+    values = InstanceConfig(valid_types=(set, dict, _NoneType, Self), default=None,
+                            doc='A dictionary to map key to values or a set to restrict the values.')
+    units = InstanceConfig(valid_types=(str, tuple, _NoneType, Self), default=None,
+                           doc='Units used by this feat.')
+    limits = InstanceConfig(valid_types=(tuple, _NoneType, Self), default=None,
+                            doc='Specify a range (start, stop, step) for numerical values')
+    get_funcs = InstanceConfig(default=None,
+                               doc='Other callables to be applied to get output.')
+    set_funcs = InstanceConfig(default=None,
+                               doc='Other callables to be applied to set input argument.')
 
     def __set_name__(self, owner, name):
         super().__set_name__(owner, name)
@@ -214,11 +201,16 @@ class DictFeat(InstanceConfigurableProperty, DictObservableProperty):
     _storage_ns_init = lambda instance: defaultdict(dict)
 
     # These are feat modifiers.
-    values = Config()
-    units = Config()
-    limits = Config()
-    get_funcs = Config()
-    set_funcs = Config()
+    values = InstanceConfig(valid_types=(set, dict, _NoneType, Self), default=None,
+                            doc='A dictionary to map key to values or a set to restrict the values.')
+    units = InstanceConfig(valid_types=(str, tuple, _NoneType), default=None,
+                           doc='Units used by this feat.')
+    limits = InstanceConfig(valid_types=(tuple, _NoneType), default=None,
+                            doc='Specify a range (start, stop, step) for numerical values')
+    get_funcs = InstanceConfig(default=None,
+                               doc='Other callables to be applied to get output.')
+    set_funcs = InstanceConfig(default=None,
+                               doc='Other callables to be applied to set input argument.')
 
     _simulator = None
 
@@ -280,7 +272,7 @@ class FeatProxy:
 
     def __getattr__(self, item):
 
-        if item in self.proxied._config_keys:
+        if item in self.proxied._config.keys():
             return self.proxied.config_get(self.instance, item)
 
         elif hasattr(self.proxied, item):
@@ -294,7 +286,7 @@ class FeatProxy:
 
     def __setattr__(self, item, value):
 
-        if item not in self.proxied._config_keys:
+        if item not in self.proxied._config.keys():
             raise AttributeError('Cannot set %s in %s. '
                                  'Invalid Feat modifier', item, self.proxied.name)
 

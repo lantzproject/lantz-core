@@ -157,11 +157,11 @@ class DictFeatTest(unittest.TestCase):
             def eggs(self_, key, value):
                 self_._eggs[key] = value
 
-        obj = Spam()
+        obj = Spam(name='myspam')
         x = obj.eggs['answer']
         obj.eggs['answer'] = x
         obj.eggs['answer'] = x + 1
-        self.assertEqual(hdl.history, ['Created Spam5',
+        self.assertEqual(hdl.history, ['Created myspam',
                                        "Getting eggs['answer']",
                                        "Got 42 for eggs['answer']",
                                        "No need to set eggs['answer'] = 42 (current=42)",
