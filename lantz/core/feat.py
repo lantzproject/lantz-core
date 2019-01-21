@@ -15,7 +15,7 @@ import functools
 from collections import defaultdict
 
 from pimpmyclass import InstanceConfig
-from pimpmyclass.props import (LockProperty, GetSetCacheProperty, ReadOnceProperty, PreventUnnecessarySetProperty, TransformProperty,
+from pimpmyclass.props import (LockProperty, ReadOnceProperty, PreventUnnecessarySetProperty, TransformProperty,
                                StatsProperty, LogProperty, ObservableProperty, NamedProperty, InstanceConfigurableProperty)
 from pimpmyclass.dictprops import DictObservableProperty
 
@@ -52,7 +52,7 @@ class SimProperty(NamedProperty):
 
 
 class Feat(LockProperty, ObservableProperty, PreventUnnecessarySetProperty, ReadOnceProperty,
-           GetSetCacheProperty, TransformProperty, LogProperty, StatsProperty, SimProperty):
+           TransformProperty, LogProperty, StatsProperty, SimProperty):
     """Pimped Python property for interfacing with instruments. Can be used as
     a decorator.
 
