@@ -308,7 +308,7 @@ class DictFeatProxy:
 
     def __getattr__(self, item):
 
-        if item in self.proxied._config_keys:
+        if item in self.proxied._config.keys():
             return self.proxied.config_get(self.instance, item)
 
         elif hasattr(self.proxied, item):
@@ -322,7 +322,7 @@ class DictFeatProxy:
 
     def __setattr__(self, item, value):
 
-        if item not in self.proxied._config_keys:
+        if item not in self.proxied._config.keys():
             raise AttributeError('Cannot set %s in %s. '
                                  'Invalid DictFeat modifier', item, self.proxied.name)
 
