@@ -5,7 +5,7 @@ Lantz Changelog
 0.5.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Removed obselete access to _config_keys
 
 
 0.5.2 (2019-01-21)
