@@ -21,7 +21,7 @@ root_folder = os.path.dirname(os.path.abspath(__file__))
 
 
 setup(name='lantz-core',
-      version='0.5.3',
+      version='0.5.4.dev0',
       license='BSD',
       description='Instrumentation framework',
       long_description=long_description,
