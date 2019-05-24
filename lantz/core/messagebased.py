@@ -14,7 +14,7 @@ import types
 
 import visa
 
-from .errors import NotSupportedError
+from .errors import NotSupportedError, NotInitializedError
 from .driver import Driver
 from .feat import Feat
 from . import processors
@@ -36,6 +36,12 @@ def get_resource_manager():
         from . import config
         _resource_manager = visa.ResourceManager(config.VISA_BACKEND)
     return _resource_manager
+
+
+class UninitializedResource:
+
+    def __getattr__(self, item):
+        raise NotInitializedError
 
 
 class MessageBasedDriver(Driver):
@@ -401,7 +407,7 @@ class MessageBasedDriver(Driver):
 
         # The resource will be created when the driver is initialized.
         #: :type: pyvisa.resources.MessageBasedResource
-        self.resource = None
+        self.resource = UninitializedResource()
 
         self.log_debug('Using MessageBasedDriver for {}', self.resource_name)
 
@@ -416,6 +422,7 @@ class MessageBasedDriver(Driver):
         self.log_debug('Closing resource {}', self.resource_name)
         if not self.resource_name == 'dummy':
             self.resource.close()
+        self.resource = UninitializedResource()
         super().finalize()
 
     def query(self, command, *, send_args=(None, None), recv_args=(None, None)):
