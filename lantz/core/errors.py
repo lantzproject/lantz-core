@@ -27,3 +27,8 @@ class InstrumentError(Exception):
 class NotSupportedError(Exception):
     """ """
     pass
+
+class NotInitializedError(Exception):
+
+    def __str__(self):
+        return "The resource is not ready yet. Call the initialize() method of the driver instance."
