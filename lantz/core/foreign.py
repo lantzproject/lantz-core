@@ -225,9 +225,9 @@ class LibraryDriver(Driver):
 
     def __init__(self, *args, **kwargs):
         library_name = kwargs.pop('library_name', None)
+        folder = kwargs.pop('library_folder', os.path.dirname(inspect.getfile(self.__class__)))
         super().__init__(*args, **kwargs)
 
-        folder = os.path.dirname(inspect.getfile(self.__class__))
         for name in chain(iter_lib(library_name, folder), iter_lib(self.LIBRARY_NAME, folder)):
             if name is None:
                 continue
