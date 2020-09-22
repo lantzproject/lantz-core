@@ -1,0 +1,4 @@
+https://github.com/lantzproject/lantz_drivers/zipball/master
+https://github.com/lantzproject/lantz_qt/zipball/master
+https://github.com/lantzproject/lantz_sims/zipball/master
+https://github.com/lantzproject/lantz/zipball/master
