@@ -11,7 +11,7 @@ long_description = '\n\n'.join([read('README'),
                                 read('CHANGES')])
 
 setup(
-    name='lantz',
+    name='lantzdev',
     version='0.6.0',
     license='BSD 3-Clause License',
     description='Simple yet powerful instrumentation in Python',
