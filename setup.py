@@ -58,7 +58,7 @@ setup(
         'pyyaml>=5.3.1',
         'serialize>=0.1',
         'stringparser>=0.5',
-        'lantz-drivers>=0.5.2',
+        'lantz-drivers>=0.6.0',
         'lantz-sims>=0.5.2',
     ],
     extras_require={
