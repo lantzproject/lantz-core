@@ -58,19 +58,19 @@ setup(
         'pyyaml>=5.3.1',
         'serialize>=0.1',
         'stringparser>=0.5',
-        'lantz-drivers>=0.6.0',
-        'lantz-sims>=0.5.2',
+        'lantz-drivers>=0.6',
+        'lantz-sims>=0.6',
     ],
     extras_require={
         'qt': [
-            'lantz-qt>=0.5.3',
+            'lantz-qt>=0.6',
         ],
         'ino': [
-            'lantz-ino>=0.5.2',
+            'lantz-ino>=0.6',
         ],
         'full': [
-            'lantz-qt>=0.5.3',
-            'lantz-ino>=0.5.2',
+            'lantz-qt>=0.6',
+            'lantz-ino>=0.6',
         ],
         'color': [
             'colorama>=0.4.3',
@@ -80,6 +80,7 @@ setup(
         'console_scripts': [
             'lantz = lantz.__main__:main',
             'lantz-config = lantz.core.__main__:config',
+            'lantz-monitor = lantz.scripts.lantz-monitor',
         ],
         'lantz_subcommands': [
             'config = lantz.core.__main__:config',
