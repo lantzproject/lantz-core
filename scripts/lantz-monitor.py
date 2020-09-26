@@ -462,11 +462,14 @@ class LantzMonitor(SocketListener):
             self.handler.handle(record)
 
 
-if __name__ == '__main__':
-    colorama.init()
+###########################
+# standalone main
+###########################
 
+def main():
     import argparse
 
+    colorama.init()
     parser = argparse.ArgumentParser(description='Text based tool to monitor Lantz messages logged to a socket..')
     parser.add_argument('-t', '--tcp', default='0.0.0.0', dest='tcphost',
                         help='Where to listen for TCP traffic (host[:port])')
@@ -488,3 +491,7 @@ if __name__ == '__main__':
         monitor.stop()
     print(clear())
     print('Lantz Monitor stopped')
+
+
+if __name__ == '__main__':
+    main()
