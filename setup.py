@@ -80,7 +80,6 @@ setup(
         'console_scripts': [
             'lantz = lantz.__main__:main',
             'lantz-config = lantz.core.__main__:config',
-            'lantz-monitor = lantz.scripts.lantz-monitor:main',
         ],
         'lantz_subcommands': [
             'config = lantz.core.__main__:config',
