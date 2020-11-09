@@ -12,7 +12,7 @@
 from collections import ChainMap
 import types
 
-import visa
+import pyvisa as visa
 
 from .errors import NotSupportedError, NotInitializedError
 from .driver import Driver
