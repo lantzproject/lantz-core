@@ -20,8 +20,8 @@ try:
 except:
     __version__ = "unknown"
 
-from pint import UnitRegistry
-ureg = UnitRegistry()
+from pint import get_application_registry
+ureg = get_application_registry()
 Q_ = ureg.Quantity
 
 from serialize import register_class
