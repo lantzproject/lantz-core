@@ -12,7 +12,7 @@ long_description = '\n\n'.join([read('README'),
 
 setup(
     name='lantzdev',
-    version='0.6.0',
+    version='0.6.2',
     license='BSD 3-Clause License',
     description='Simple yet powerful instrumentation in Python',
     long_description=long_description,
